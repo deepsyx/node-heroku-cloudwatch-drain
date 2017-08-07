@@ -1,0 +1,12 @@
+{
+  "name": "node-heroku-cloudwatch-drain",
+  "version": "1.0.0",
+  "description": "Http server that drain logs from heroku and puts it in cloudwatch",
+  "main": "src/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.90.0",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3"
+  }
+}
