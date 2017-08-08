@@ -11,8 +11,10 @@ if (!fileFromArgument) {
 	return process.exit(1);
 }
 
+let config;
+
 try {
-	const config = require(path.resolve(process.cwd(), process.argv[2]));
+	config = require(path.resolve(process.cwd(), process.argv[2]));
 } catch (e) {
 	console.log("Invalid config file.");
 	return process.exit(1);
