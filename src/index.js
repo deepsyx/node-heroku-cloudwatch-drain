@@ -2,11 +2,27 @@
 
 const path = require("path");
 
-const config = require(path.resolve(process.cwd(), process.argv[2]));
+const fileFromArgument = process.argv[2];
+
+if (!fileFromArgument) {
+	console.error(
+		"Please specify config file: \n Example: $ node-heroku-cloudwatch-drain config.js"
+	);
+	return process.exit(1);
+}
+
+try {
+	const config = require(path.resolve(process.cwd(), process.argv[2]));
+} catch (e) {
+	console.log("Invalid config file.");
+	return process.exit(1);
+}
 
 const AWS = require("aws-sdk");
 AWS.config.update({ region: config.awsCredentials.region });
 const cloudWatchInstance = new AWS.CloudWatchLogs();
+
+const LOG_STREAM = config.logStreamPrefix + Math.random().toString().substr(2);
 
 const app = require("./setupExpress");
 const setupCloudWatch = require("./setupCloudWatch");
@@ -14,7 +30,7 @@ const MessagesBuffer = require("./MessagesBuffer");
 const CloudWatchPusher = require("./CloudWatchPusher");
 
 const buffer = new MessagesBuffer(config.filters);
-const pusher = new CloudWatchPusher(cloudWatchInstance, config.logGroup, config.logStreamPrefix);
+const pusher = new CloudWatchPusher(cloudWatchInstance, config.logGroup, LOG_STREAM);
 
 app.onNewMessage(function(line) {
 	buffer.addLog(line);
@@ -25,11 +41,7 @@ app.onNewMessage(function(line) {
 	}
 });
 
-setupCloudWatch(
-	cloudWatchInstance,
-	config.logGroup,
-	config.logStreamPrefix + Math.random().toString().substr(2)
-)
+setupCloudWatch(cloudWatchInstance, config.logGroup, LOG_STREAM)
 	.then(() => {
 		app.start(config.serverPort);
 	})

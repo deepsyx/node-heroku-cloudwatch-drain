@@ -5,7 +5,7 @@ module.exports = class CloudWatchPusher {
 		this.cloudWatchInstance = cloudWatchInstance;
 		this.group = group;
 		this.stream = stream;
-		this.sequenceToken = sequenceToken;
+		this.sequenceToken = null;
 
 		this.lastPushCompleted = true;
 	}
@@ -17,14 +17,14 @@ module.exports = class CloudWatchPusher {
 	push(messages) {
 		const params = {
 			logEvents: messages.concat([]),
-			logGroupName: config.logGroup,
-			logStreamName: LOG_STREAM_NAME,
+			logGroupName: this.group,
+			logStreamName: this.stream,
 			sequenceToken: this.sequenceToken,
 		};
 
 		this.lastPushCompleted = false;
 
-		cloudwatchlogs.putLogEvents(params).promise().then(data => {
+		this.cloudWatchInstance.putLogEvents(params).promise().then(data => {
 			this.lastPushCompleted = true;
 			this.sequenceToken = data.nextSequenceToken;
 		});
