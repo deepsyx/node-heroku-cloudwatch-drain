@@ -1,5 +1,5 @@
 function isValid(log, filters) {
-	if (!log.trim()) {
+	if (!log || !log.trim()) {
 		return false;
 	}
 
@@ -15,7 +15,7 @@ function isValid(log, filters) {
 class MessagesBuffer {
 	constructor(filters) {
 		this.messages = [];
-		this.filters = filters;
+		this.filters = filters || [];
 	}
 
 	getMessagesCount() {
@@ -30,7 +30,7 @@ class MessagesBuffer {
 		if (isValid(log, this.filters)) {
 			this.messages.push({
 				timestamp: Date.now(),
-				message: log,
+				message: log.trim(),
 			});
 		}
 	}

@@ -26,7 +26,7 @@ const cloudWatchInstance = new AWS.CloudWatchLogs();
 
 const LOG_STREAM = config.logStreamPrefix + Math.random().toString().substr(2);
 
-const app = require("./setupExpress");
+const setupWebServer = require("./setupExpress")("AccessToken");
 const setupCloudWatch = require("./setupCloudWatch");
 const MessagesBuffer = require("./MessagesBuffer");
 const CloudWatchPusher = require("./CloudWatchPusher");
@@ -34,7 +34,7 @@ const CloudWatchPusher = require("./CloudWatchPusher");
 const buffer = new MessagesBuffer(config.filters);
 const pusher = new CloudWatchPusher(cloudWatchInstance, config.logGroup, LOG_STREAM);
 
-app.onNewMessage(function(line) {
+const app = setupWebServer(function(line) {
 	buffer.addLog(line);
 
 	if (buffer.getMessagesCount() > config.batchSize && !pusher.isLocked()) {
@@ -45,6 +45,6 @@ app.onNewMessage(function(line) {
 
 setupCloudWatch(cloudWatchInstance, config.logGroup, LOG_STREAM)
 	.then(() => {
-		app.start(config.serverPort);
+		app.listen(config.serverPort, () => console.log(`Server up on port ${config.serverPort}`));
 	})
 	.catch(error => console.log(error));
