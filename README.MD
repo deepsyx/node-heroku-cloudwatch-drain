@@ -48,3 +48,7 @@ Save the file above as `config.js` and add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_A
 You can now run the tool with
 
     $ node-heroku-cloudwatch-drain config.js
+
+# # License
+
+Licensed under the MIT license.
