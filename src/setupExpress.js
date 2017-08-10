@@ -1,6 +1,5 @@
 const app = require("express")();
 const bodyParser = require("body-parser");
-const basicAuth = require("express-basic-auth");
 
 app.use(bodyParser.raw({ type: "application/logplex-1", limit: "10mb" }));
 
