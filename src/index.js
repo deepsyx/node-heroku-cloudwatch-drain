@@ -30,12 +30,21 @@ const setupWebServer = require("./setupExpress")(config.accessToken);
 const setupCloudWatch = require("./setupCloudWatch");
 const MessagesBuffer = require("./MessagesBuffer");
 const CloudWatchPusher = require("./CloudWatchPusher");
+const parseMetrics = require("./parseMetrics");
 
 const buffer = new MessagesBuffer(config.filters);
 const pusher = new CloudWatchPusher(cloudWatchInstance, config.logGroup, LOG_STREAM);
 
 const app = setupWebServer(function(line) {
 	buffer.addLog(line);
+
+	if (line.indexOf("sample#memory") !== -1) {
+		parseMetrics.parseMemoryMetrics(line, cloudWatchInstance);
+	}
+
+	if (line.indexOf("sample#load") !== -1) {
+		parseMetrics.parseLoadMetrics(line, cloudWatchInstance);
+	}
 
 	if (buffer.getMessagesCount() > config.batchSize && !pusher.isLocked()) {
 		pusher.push(buffer.messages);
