@@ -26,7 +26,7 @@ const cloudWatchInstance = new AWS.CloudWatchLogs();
 
 const LOG_STREAM = config.logStreamPrefix + Math.random().toString().substr(2);
 
-const setupWebServer = require("./setupExpress")("AccessToken");
+const setupWebServer = require("./setupExpress")(config.accessToken);
 const setupCloudWatch = require("./setupCloudWatch");
 const MessagesBuffer = require("./MessagesBuffer");
 const CloudWatchPusher = require("./CloudWatchPusher");
