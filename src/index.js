@@ -22,7 +22,8 @@ try {
 
 const AWS = require("aws-sdk");
 AWS.config.update({ region: config.awsCredentials.region });
-const cloudWatchInstance = new AWS.CloudWatchLogs();
+const cloudWatchLogsInstance = new AWS.CloudWatchLogs();
+const cloudWatchInstance = new AWS.CloudWatch();
 
 const LOG_STREAM = config.logStreamPrefix + Math.random().toString().substr(2);
 
@@ -33,7 +34,7 @@ const CloudWatchPusher = require("./CloudWatchPusher");
 const parseMetrics = require("./parseMetrics");
 
 const buffer = new MessagesBuffer(config.filters);
-const pusher = new CloudWatchPusher(cloudWatchInstance, config.logGroup, LOG_STREAM);
+const pusher = new CloudWatchPusher(cloudWatchLogsInstance, config.logGroup, LOG_STREAM);
 
 const app = setupWebServer(function(line) {
 	buffer.addLog(line);
@@ -52,7 +53,7 @@ const app = setupWebServer(function(line) {
 	}
 });
 
-setupCloudWatch(cloudWatchInstance, config.logGroup, LOG_STREAM)
+setupCloudWatch(cloudWatchLogsInstance, config.logGroup, LOG_STREAM)
 	.then(() => {
 		app.listen(config.serverPort, () => console.log(`Server up on port ${config.serverPort}`));
 	})

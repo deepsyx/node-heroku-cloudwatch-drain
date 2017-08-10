@@ -1,4 +1,7 @@
-function parseMemoryMetrics(line, cloudwatch) {
+function parseMemoryMetrics(line, cloudwatch, __time) {
+	// time parameter is used only in test mode
+	const currentTime = __time || new Date();
+
 	const [
 		content,
 		source,
@@ -24,9 +27,9 @@ function parseMemoryMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Megabytes",
-				Value: memoryPgpgin,
+				Value: Number(memoryPgpgin),
 			},
 			{
 				MetricName: "Memory PGPGOUT",
@@ -36,9 +39,9 @@ function parseMemoryMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Megabytes",
-				Value: memoryPgpgout,
+				Value: Number(memoryPgpgout),
 			},
 			{
 				MetricName: "Memory Usage",
@@ -48,9 +51,9 @@ function parseMemoryMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Megabytes",
-				Value: memoryTotal,
+				Value: Number(memoryTotal),
 			},
 			{
 				MetricName: "Memory RSS",
@@ -60,9 +63,9 @@ function parseMemoryMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Megabytes",
-				Value: memoryRss,
+				Value: Number(memoryRss),
 			},
 			{
 				MetricName: "Memory Cache",
@@ -72,9 +75,9 @@ function parseMemoryMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Megabytes",
-				Value: memoryCache,
+				Value: Number(memoryCache),
 			},
 			{
 				MetricName: "Memory Swap",
@@ -84,9 +87,9 @@ function parseMemoryMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Megabytes",
-				Value: memorySwap,
+				Value: Number(memorySwap),
 			},
 			{
 				MetricName: "Memory Qouta",
@@ -96,9 +99,9 @@ function parseMemoryMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Megabytes",
-				Value: memoryQuota,
+				Value: Number(memoryQuota),
 			},
 		],
 		Namespace: "Heroku Metrics",
@@ -107,7 +110,10 @@ function parseMemoryMetrics(line, cloudwatch) {
 	return cloudwatch.putMetricData(params).promise();
 }
 
-function parseLoadMetrics(line, cloudwatch) {
+function parseLoadMetrics(line, cloudwatch, __time) {
+	// time parameter is used only in test mode
+	const currentTime = __time || new Date();
+
 	const [content, source, dyno, load1m, load5m, load15m] = line.match(
 		/source=(\w+[.]\d+) dyno=([^ ]+) sample#load_avg_1m=([^ ]+) sample#load_avg_5m=([^ ]+) sample#load_avg_15m=([^ ]+)/
 	);
@@ -122,9 +128,9 @@ function parseLoadMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Percent",
-				Value: load1m,
+				Value: Number(load1m),
 			},
 			{
 				MetricName: "CPU Load 5 minute",
@@ -134,9 +140,9 @@ function parseLoadMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Percent",
-				Value: load5m,
+				Value: Number(load5m),
 			},
 			{
 				MetricName: "CPU Load 15 minute",
@@ -146,9 +152,9 @@ function parseLoadMetrics(line, cloudwatch) {
 						Value: source,
 					},
 				],
-				Timestamp: new Date(),
+				Timestamp: currentTime,
 				Unit: "Percent",
-				Value: load15m,
+				Value: Number(load15m),
 			},
 		],
 		Namespace: "Heroku Metrics",
