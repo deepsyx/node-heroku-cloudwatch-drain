@@ -20,6 +20,8 @@ try {
 	return process.exit(1);
 }
 
+const MAX_TIME_BETWEEN_PUSHES = 2000;
+
 const AWS = require("aws-sdk");
 AWS.config.update({ region: config.awsCredentials.region });
 const cloudWatchLogsInstance = new AWS.CloudWatchLogs();
@@ -36,6 +38,8 @@ const parseMetrics = require("./parseMetrics");
 const buffer = new MessagesBuffer(config.filters);
 const pusher = new CloudWatchPusher(cloudWatchLogsInstance, config.logGroup, LOG_STREAM);
 
+let lastPushedTime = 0;
+
 const app = setupWebServer(function(line) {
 	buffer.addLog(line);
 
@@ -47,9 +51,15 @@ const app = setupWebServer(function(line) {
 		parseMetrics.parseLoadMetrics(line, cloudWatchInstance);
 	}
 
-	if (buffer.getMessagesCount() > config.batchSize && !pusher.isLocked()) {
+	if (
+		(buffer.getMessagesCount() > config.batchSize ||
+			(Date.now() - lastPushedTime > MAX_TIME_BETWEEN_PUSHES &&
+				buffer.getMessagesCount() > 0)) &&
+		!pusher.isLocked()
+	) {
 		pusher.push(buffer.messages);
 		buffer.clearMessages();
+		lastPushedTime = Date.now();
 	}
 });
 
