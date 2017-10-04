@@ -16,7 +16,7 @@ Deploying
 * Create a `config.js` file with the following content:
 
 
-    module.exports = {
+     module.exports = {
         // how many messages should we buffer and send to AWS at once, do not change unless necessary
     	batchSize: 50,
     	
