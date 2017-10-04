@@ -16,7 +16,7 @@ Deploying
 * Create a `config.js` file with the following content:
 
 
-     module.exports = {
+      module.exports = {
         // how many messages should we buffer and send to AWS at once, do not change unless necessary
     	batchSize: 50,
     	
@@ -39,7 +39,7 @@ Deploying
     	
     	// [OPTIONAL] array with regexs to avoid pushing useless logs to cloudwatch
     	filters: [/getVersion/],
-    };
+      };
 
 * Run the tool with forever (it will auto-restart on failure)
     
@@ -49,7 +49,7 @@ Deploying
 * get your EC2 instance IP from the console and try to open the following link in your browser:
 
 
-    http://ec2-XXX-XXX-XXX-XXX.compute-1.amazonaws.com:3000/
+      http://ec2-XXX-XXX-XXX-XXX.compute-1.amazonaws.com:3000/
  
 and you should see `{"message":"Invalid token"}` as response.
 
@@ -57,7 +57,7 @@ and you should see `{"message":"Invalid token"}` as response.
 * execute
 
 
-    $ heroku drains:add http://ec2-XXX-XXX-XXX-XXX.compute-1.amazonaws.com:3000/log?accessToken=sometoken --app YOUR APP
+      $ heroku drains:add http://ec2-XXX-XXX-XXX-XXX.compute-1.amazonaws.com:3000/log?accessToken=sometoken --app YOUR APP
     
 * If the above command succeed, your heroku logs should start appearing in CloudWatch.
 
