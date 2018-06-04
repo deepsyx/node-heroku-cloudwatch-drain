@@ -1,6 +1,13 @@
+const MEMORY_REGEX = /source=(\w+[.]\d+) dyno=([^ ]+) sample#memory_total=([^ ]+)MB sample#memory_rss=([^ ]+)MB sample#memory_cache=([^ ]+)MB sample#memory_swap=([^ ]+)MB sample#memory_pgpgin=([^ ]+)pages sample#memory_pgpgout=([^ ]+)pages sample#memory_quota=([^ ]+)MB/;
+const METRIC_REGEX = /source=(\w+[.]\d+) dyno=([^ ]+) sample#load_avg_1m=([^ ]+) sample#load_avg_5m=([^ ]+) sample#load_avg_15m=([^ ]+)/;
+
 function parseMemoryMetrics(line, cloudwatch, __time) {
 	// time parameter is used only in test mode
 	const currentTime = __time || new Date();
+	let matched = line.match(MEMORY_REGEX);
+
+	if(!matched)
+	  return Promise.reject()
 
 	const [
 		content,
@@ -13,9 +20,7 @@ function parseMemoryMetrics(line, cloudwatch, __time) {
 		memoryPgpgin,
 		memoryPgpgout,
 		memoryQuota,
-	] = line.match(
-		/source=(\w+[.]\d+) dyno=([^ ]+) sample#memory_total=([^ ]+)MB sample#memory_rss=([^ ]+)MB sample#memory_cache=([^ ]+)MB sample#memory_swap=([^ ]+)MB sample#memory_pgpgin=([^ ]+)pages sample#memory_pgpgout=([^ ]+)pages sample#memory_quota=([^ ]+)MB/
-	);
+	] = matched;
 
 	const params = {
 		MetricData: [
@@ -113,10 +118,12 @@ function parseMemoryMetrics(line, cloudwatch, __time) {
 function parseLoadMetrics(line, cloudwatch, __time) {
 	// time parameter is used only in test mode
 	const currentTime = __time || new Date();
+	let matched = line.match(METRIC_REGEX);
 
-	const [content, source, dyno, load1m, load5m, load15m] = line.match(
-		/source=(\w+[.]\d+) dyno=([^ ]+) sample#load_avg_1m=([^ ]+) sample#load_avg_5m=([^ ]+) sample#load_avg_15m=([^ ]+)/
-	);
+	if(!matched)
+	   return Promise.reject()
+
+	const [content, source, dyno, load1m, load5m, load15m] = matched;
 
 	const params = {
 		MetricData: [
