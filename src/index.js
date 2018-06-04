@@ -44,11 +44,14 @@ const app = setupWebServer(function(line) {
 	buffer.addLog(line);
 
 	if (line.indexOf("sample#memory") !== -1) {
-		parseMetrics.parseMemoryMetrics(line, cloudWatchInstance);
+		parseMetrics
+		.parseMemoryMetrics(line, cloudWatchInstance)
+		.catch(() => {});
 	}
 
 	if (line.indexOf("sample#load") !== -1) {
-		parseMetrics.parseLoadMetrics(line, cloudWatchInstance);
+		parseMetrics.parseLoadMetrics(line, cloudWatchInstance)
+		.catch(() => {});
 	}
 
 	if (
